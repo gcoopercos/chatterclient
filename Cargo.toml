@@ -1,0 +1,10 @@
+[package]
+name = "chatterclient"
+version = "0.1.0"
+authors = ["Greg Cooper <gregory.cooper@gmail.com>"]
+
+[dependencies]
+appnetcore = { path = "../appnetcore" }
+
+
+
