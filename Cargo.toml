@@ -5,6 +5,6 @@ authors = ["Greg Cooper <gregory.cooper@gmail.com>"]
 
 [dependencies]
 appnetcore = { path = "../appnetcore" }
-
+termion = "1"
 
 
