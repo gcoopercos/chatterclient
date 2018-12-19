@@ -43,7 +43,8 @@ fn main() {
 
     let listen_address = SocketReadAddress{
         read_host: String::from("localhost"),
-        _read_port: 10001
+        read_port: 10001,
+        reader_id: String::from("testclient")
     };
 
     // States.
@@ -55,7 +56,12 @@ fn main() {
     let (app_tx,app_command_rx): (Sender<Box<AppCommand + Send>>,
                                   Receiver<Box<AppCommand + Send>>) = mpsc::channel();
 
-    let pri = PacketReaderServer::with_senders(tx, app_tx);
+    let (_reader_tx, reader_rx) = mpsc::channel();
+
+    let pri = PacketReaderServer::new(
+        tx,
+        app_tx,
+        reader_rx );
 
     // Initialize our packet reader
     let _rthread = read_packets(pri, &listen_address);
@@ -64,20 +70,20 @@ fn main() {
     println!("Connecting...");
 
     let packet_writer = PacketWriter::with_destination(
-        "127.0.0.1","10001",
+        "127.0.0.1","10001", "10002",
         "testclient","testpass",
         "127.0.0.1","10000");
 
     packet_writer.send_connection_request();
     eprintln!("Connected.");
-    packet_writer.send_connection_request();
-    eprintln!("Connected.");
-    packet_writer.send_connection_request();
-    eprintln!("Connected.");
-    packet_writer.send_connection_request();
-    eprintln!("Connected.");
-    packet_writer.send_connection_request();
-    eprintln!("Connected.");
+//    packet_writer.send_connection_request();
+//    eprintln!("Connected.");
+//    packet_writer.send_connection_request();
+//    eprintln!("Connected.");
+//    packet_writer.send_connection_request();
+//    eprintln!("Connected.");
+//    packet_writer.send_connection_request();
+//    eprintln!("Connected.");
     let mut previous = get_current_time();
     let mut lag: f64 = 0.0;
     let mut stdin_reader = termion::async_stdin();
@@ -101,7 +107,7 @@ fn main() {
 //                eprintln!("Number read: {}", numbytes);
 //                eprintln!("String read: {}", line_read);
                 eprint!("{}",data_read);
-                packet_writer.send_text_message(12, &data_read);
+                packet_writer.send_text_message("testclient", &data_read);
                 data_read.clear();
             }
             // Process game state
